@@ -8,16 +8,28 @@ import 'package:mm/property.dart';
 
 abstract class WseModel extends Model {
   static String api_server_address = 'http://localhost:3001/api';
-  static String? token = null;
+  static String? token;
 
   static Future<List<T>> find<T extends Model> (
       WseModelHandler handler,
       Map<String, dynamic> options,
-      Map<String, dynamic> order_query,
+      { Map<String, dynamic>? order_query }
   ) async {
-    // TODO call api: get by id
-    final res = '[{"id":1, "name":"john Kim", "age": 35},{"id":2, "name":"gh Seo", "age": 36}]';
-    final res_jsons = json.decode(res) as List<dynamic>;
+    // call api: get
+    final query_params = <String, dynamic>{ 'options': jsonEncode(options) };
+    if (order_query != null)
+      query_params['order_query'] = jsonEncode(order_query);
+    final res = await http.get(
+        Uri(
+          path:'$api_server_address/${handler.path}',
+          queryParameters: query_params,
+        ),
+        headers: _makeHeaders(token),
+    );
+    if (res.statusCode ~/ 100 != 2)
+      throw WseApiCallExeption(res);
+    
+    final res_jsons = (json.decode(res.body) as List<dynamic>);
     return res_jsons.map<T>((e) {
       final id = e[handler.id_key];
       var m = Model.getModel(handler, id) as T?;
