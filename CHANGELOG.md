@@ -1,3 +1,6 @@
+## 0.0.3
+- add calling api logics
+
 ## 0.0.2
 - rename ModelSelector to ModelHandler
 
