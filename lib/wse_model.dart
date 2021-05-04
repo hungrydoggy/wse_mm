@@ -43,6 +43,36 @@ abstract class WseModel extends Model {
   }
 
   @override
+  void setByJson(Map<String, dynamic> json) {
+    // process for results by include
+    final wse_mh = handler as WseModelHandler;
+    for (final key in json.keys) {
+      if (key[0] != '*')
+        continue;
+      
+      if (wse_mh.key_nestedhandler.containsKey(key) == false) {
+        print('no nested key "$key" in $model_name');
+        continue;
+      }
+
+      final nested_mh = wse_mh.key_nestedhandler[key]!;
+      final obj = json[key] as Map<String, dynamic>;
+      if (obj.containsKey(nested_mh.id_key) == false) {
+        print('no ${nested_mh.model_name}.id of nested key "$key" in $model_name');
+        continue;
+      }
+      
+      final m = Model.getOrNewModel(nested_mh, obj[nested_mh.id_key]!);
+      m.setByJson(obj);
+
+      json.remove(key);
+    }
+
+    // set self
+    super.setByJson(json);
+  }
+
+  @override
   Future<void> onFetch (List<Property> properties) async {
     final options = '{"attributes":[${properties.map<String>((e)=>'"'+e.name+'"').join(',')}]}';
 
@@ -90,6 +120,7 @@ abstract class WseModel extends Model {
 abstract class WseModelHandler extends ModelHandler {
   String get path;
   String get id_key;
+  Map<String, WseModelHandler> get key_nestedhandler;
 
   @override
   Future<T?> onCreate<T extends Model>(Map<Property, dynamic> property_value_map) async {
@@ -128,6 +159,7 @@ abstract class WseModelHandler extends ModelHandler {
       throw WseApiCallExeption(res);
   }
 }
+
 
 class WseApiCallExeption implements Exception {
   final http.Response _response;

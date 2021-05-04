@@ -1,3 +1,6 @@
+## 0.0.4
+- update WseModel.setByJson to set nested 
+
 ## 0.0.3
 - add calling api logics
 
