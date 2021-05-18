@@ -1,3 +1,6 @@
+## 0.0.5
+- update WseModel.find function
+
 ## 0.0.4
 - update WseModel.setByJson to set nested 
 

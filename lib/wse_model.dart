@@ -5,15 +5,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mm/model.dart';
 import 'package:mm/property.dart';
+import 'package:mm/view_model.dart';
 
 abstract class WseModel extends Model {
   static String api_server_address = 'http://localhost:3001/api';
   static String? token;
 
-  static Future<List<T>> find<T extends Model> (
+  static Future<List<dynamic>> find (
       WseModelHandler handler,
-      Map<String, dynamic> options,
-      { Map<String, dynamic>? order_query }
+      dynamic options,
+      { dynamic? order_query }
   ) async {
     // call api: get
     final query_params = <String, dynamic>{ 'options': jsonEncode(options) };
@@ -30,16 +31,17 @@ abstract class WseModel extends Model {
       throw WseApiCallExeption(res);
     
     final res_jsons = (json.decode(res.body) as List<dynamic>);
-    return res_jsons.map<T>((e) {
-      final id = e[handler.id_key];
-      var m = Model.getModel(handler, id) as T?;
+    for (final rj in res_jsons) {
+      final id = rj[handler.id_key];
+      var m = Model.getModel(handler, id);
       if (m == null) {
-        m = handler.newInstance(id) as T?;
-        Model.putModel(handler, m!);
+        m = handler.newInstance(id);
+        Model.putModel(handler, m);
       }
-      m.setByJson(e);
-      return m;
-    }).toList();
+      m.setByJson(rj);
+    }
+
+    return res_jsons;
   }
 
   @override
