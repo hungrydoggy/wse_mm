@@ -1,3 +1,6 @@
+## 0.0.6
+- add WseModel.findById function
+
 ## 0.0.5
 - update WseModel.find function
 

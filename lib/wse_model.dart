@@ -44,6 +44,44 @@ abstract class WseModel extends Model {
     return res_jsons;
   }
 
+  static Future<List<dynamic>> findById (
+      WseModelHandler handler,
+      dynamic id,
+      {
+        dynamic? options,
+        bool?    need_count,
+      }
+  ) async {
+    // call api: get
+    final query_params = <String, dynamic>{};
+    if (options != null)
+      query_params['options'] = jsonEncode(options);
+    if (need_count != null)
+      query_params['need_count'] = jsonEncode(need_count);
+    final res = await http.get(
+        Uri(
+          path:'$api_server_address/${handler.path}/$id',
+          queryParameters: query_params,
+        ),
+        headers: _makeHeaders(token),
+    );
+    if (res.statusCode ~/ 100 != 2)
+      throw WseApiCallExeption(res);
+    
+    final res_jsons = (json.decode(res.body) as List<dynamic>);
+    for (final rj in res_jsons) {
+      final id = rj[handler.id_key];
+      var m = Model.getModel(handler, id);
+      if (m == null) {
+        m = handler.newInstance(id);
+        Model.putModel(handler, m);
+      }
+      m.setByJson(rj);
+    }
+
+    return res_jsons;
+  }
+
   @override
   void setByJson(Map<String, dynamic> json) {
     // process for results by include
