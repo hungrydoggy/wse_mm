@@ -20,17 +20,14 @@ abstract class WseModel extends Model {
     final query_params = <String, dynamic>{ 'options': jsonEncode(options) };
     if (order_query != null)
       query_params['order_query'] = jsonEncode(order_query);
-    final res = await http.get(
-        Uri(
-          path:'$api_server_address/${handler.path}',
-          queryParameters: query_params,
-        ),
-        headers: _makeHeaders(token),
-    );
-    if (res.statusCode ~/ 100 != 2)
-      throw WseApiCallExeption(res);
     
-    final res_jsons = (json.decode(res.body) as List<dynamic>);
+    final res = await WseApiCall.get(
+      '$api_server_address/${handler.path}',
+      query_params: query_params,
+      token: token,
+    );
+    
+    final res_jsons = (json.decode(res.body)['items'] as List<dynamic>);
     for (final rj in res_jsons) {
       final id = rj[handler.id_key];
       var m = Model.getModel(handler, id);
@@ -58,17 +55,14 @@ abstract class WseModel extends Model {
       query_params['options'] = jsonEncode(options);
     if (need_count != null)
       query_params['need_count'] = jsonEncode(need_count);
-    final res = await http.get(
-        Uri(
-          path:'$api_server_address/${handler.path}/$id',
-          queryParameters: query_params,
-        ),
-        headers: _makeHeaders(token),
-    );
-    if (res.statusCode ~/ 100 != 2)
-      throw WseApiCallExeption(res);
     
-    final res_jsons = (json.decode(res.body) as List<dynamic>);
+    final res = await WseApiCall.get(
+      '$api_server_address/${handler.path}/$id',
+      query_params: query_params,
+      token: token,
+    );
+    
+    final res_jsons = (json.decode(res.body)['items'] as List<dynamic>);
     for (final rj in res_jsons) {
       final id = rj[handler.id_key];
       var m = Model.getModel(handler, id);
@@ -118,19 +112,15 @@ abstract class WseModel extends Model {
 
     // call api: get by id
     final wse_sel = handler as WseModelHandler;
-    final res = await http.get(
-        Uri(
-          path:'$api_server_address/${wse_sel.path}/$id',
-          queryParameters: {
-            options: options,
-          },
-        ),
-        headers: _makeHeaders(token),
+    final res = await WseApiCall.get(
+      '$api_server_address/${wse_sel.path}/$id',
+      query_params: {
+        "options": options,
+      },
+      token: token,
     );
-    if (res.statusCode ~/ 100 != 2)
-      throw WseApiCallExeption(res);
     
-    final res_json = (json.decode(res.body) as List<dynamic>)[0];
+    final res_json = (json.decode(res.body)['items'] as List<dynamic>)[0];
     setByJson(res_json);
 
     Model.putModel(handler, this);
@@ -142,17 +132,13 @@ abstract class WseModel extends Model {
 
     // call api: put
     final wse_sel = handler as WseModelHandler;
-    final res = await http.put(
-        Uri(
-          path:'$api_server_address/${wse_sel.path}/$id',
-        ),
-        headers: _makeHeaders(token),
-        body: {
-          params: params,
-        },
+    final res = await WseApiCall.put(
+      '$api_server_address/${wse_sel.path}/$id',
+      body: {
+        params: params,
+      },
+      token: token,
     );
-    if (res.statusCode ~/ 100 != 2)
-      throw WseApiCallExeption(res);
   }
 }
 
@@ -167,19 +153,15 @@ abstract class WseModelHandler extends ModelHandler {
     final params = '{${property_value_map.keys.map<String>((e)=>'"${e.name}": ${(property_value_map[e] is String)? '"${property_value_map[e]}"': property_value_map[e]}').join(',')}}';
 
     // call api: post
-    final res = await http.post(
-        Uri(
-          path:'$WseModel.api_server_address/$path',
-        ),
-        headers: _makeHeaders(WseModel.token),
-        body: {
-          params: params,
-        },
+    final res = await WseApiCall.post(
+      '${WseModel.api_server_address}/$path',
+      body: {
+        params: params,
+      },
+      token: WseModel.token,
     );
-    if (res.statusCode ~/ 100 != 2)
-      throw WseApiCallExeption(res);
 
-    final res_json = (json.decode(res.body) as List<dynamic>)[0];
+    final res_json = (json.decode(res.body)['items'] as List<dynamic>)[0];
     final m = newInstance(res_json.id);
     m.setByJson(res_json);
 
@@ -189,14 +171,104 @@ abstract class WseModelHandler extends ModelHandler {
   @override
   Future<void> onDelete(id) async {
     // call api: delete
-    final res = await http.delete(
+    final res = await WseApiCall.delete(
+      '$WseModel.api_server_address/$path/$id',
+      token: WseModel.token,
+    );
+  }
+}
+
+
+class WseApiCall {
+
+  static Future<http.Response> get (
+      String path,
+      {
+        dynamic query_params = const <String, dynamic>{},
+        String? token,
+      }
+  ) async {
+    final res = await http.get(
         Uri(
-          path:'$WseModel.api_server_address/$path/$id',
+          path: path,
+          queryParameters: query_params,
         ),
-        headers: _makeHeaders(WseModel.token),
+        headers: _makeHeaders(token),
     );
     if (res.statusCode ~/ 100 != 2)
       throw WseApiCallExeption(res);
+    
+    return res;
+  }
+
+  static Future<http.Response> delete (
+      String path,
+      {
+        dynamic query_params = const <String, dynamic>{},
+        String? token,
+      }
+  ) async {
+    final res = await http.delete(
+        Uri(
+          path: path,
+          queryParameters: query_params,
+        ),
+        headers: _makeHeaders(token),
+    );
+    if (res.statusCode ~/ 100 != 2)
+      throw WseApiCallExeption(res);
+    
+    return res;
+  }
+
+  static Future<http.Response> post (
+      String path,
+      {
+        dynamic body = const <String, dynamic>{},
+        String? token,
+      }
+  ) async {
+    final res = await http.post(
+        Uri(
+          path: path,
+        ),
+        headers: _makeHeaders(token),
+        body: body,
+    );
+    if (res.statusCode ~/ 100 != 2)
+      throw WseApiCallExeption(res);
+    
+    return res;
+  }
+
+  static Future<http.Response> put (
+      String path,
+      {
+        dynamic body = const <String, dynamic>{},
+        String? token,
+      }
+  ) async {
+    final res = await http.put(
+        Uri(
+          path: path,
+        ),
+        headers: _makeHeaders(token),
+        body: body,
+    );
+    if (res.statusCode ~/ 100 != 2)
+      throw WseApiCallExeption(res);
+    
+    return res;
+  }
+
+  static Map<String, String> _makeHeaders (String? token) {
+    final headers = {
+      'Content-type': 'application/json',
+    };
+    if (token != null)
+      headers['x-api-key'] = token;
+    
+    return headers;
   }
 }
 
@@ -220,13 +292,3 @@ class WseApiCallExeption implements Exception {
   }
 }
 
-
-Map<String, String> _makeHeaders (String? token) {
-  final headers = {
-    'Content-type': 'application/json',
-  };
-  if (token != null)
-    headers['x-api-key'] = token;
-  
-  return headers;
-}

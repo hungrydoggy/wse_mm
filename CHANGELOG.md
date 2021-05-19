@@ -1,3 +1,6 @@
+## 0.0.7
+- add WseApiCall class
+
 ## 0.0.6
 - add WseModel.findById function
 
