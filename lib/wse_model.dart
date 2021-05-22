@@ -29,13 +29,7 @@ abstract class WseModel extends Model {
     
     final res_jsons = (json.decode(res.body)['items'] as List<dynamic>);
     for (final rj in res_jsons) {
-      final id = rj[handler.id_key];
-      var m = Model.getModel(handler, id);
-      if (m == null) {
-        m = handler.newInstance(id);
-        Model.putModel(handler, m);
-      }
-      m.setByJson(rj);
+      registerByJson(handler, rj);
     }
 
     return res_jsons;
@@ -64,20 +58,30 @@ abstract class WseModel extends Model {
     
     final res_jsons = (json.decode(res.body)['items'] as List<dynamic>);
     for (final rj in res_jsons) {
-      final id = rj[handler.id_key];
-      var m = Model.getModel(handler, id);
-      if (m == null) {
-        m = handler.newInstance(id);
-        Model.putModel(handler, m);
-      }
-      m.setByJson(rj);
+      registerByJson(handler, rj);
     }
 
     return res_jsons;
   }
 
+  static Model registerByJson (WseModelHandler handler, dynamic json) {
+    if (json.containsKey(handler.id_key) == false)
+      throw 'no id key for ${handler.model_name}';
+    
+    final id = json[handler.id_key];
+    var m = Model.getModel(handler, id);
+    if (m == null) {
+      m = handler.newInstance(id);
+      Model.putModel(handler, m);
+    }
+    m.setByJson(json);
+
+    return m;
+  }
+  
+
   @override
-  void setByJson(Map<String, dynamic> json) {
+  void setByJson (dynamic json) {
     // process for results by include
     final wse_mh = handler as WseModelHandler;
     for (final key in json.keys) {

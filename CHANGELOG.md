@@ -1,3 +1,6 @@
+## 0.0.8
+- add WseModel.registerByJson
+
 ## 0.0.7
 - add WseApiCall class
 
