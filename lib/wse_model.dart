@@ -192,9 +192,13 @@ class WseApiCall {
         String? token,
       }
   ) async {
+    final uri = Uri.parse(path);
     final res = await http.get(
         Uri(
-          path: path,
+          scheme: uri.scheme,
+          host: uri.host,
+          port: uri.port,
+          path: uri.path,
           queryParameters: query_params,
         ),
         headers: _makeHeaders(token),
@@ -212,9 +216,13 @@ class WseApiCall {
         String? token,
       }
   ) async {
+    final uri = Uri.parse(path);
     final res = await http.delete(
         Uri(
-          path: path,
+          scheme: uri.scheme,
+          host: uri.host,
+          port: uri.port,
+          path: uri.path,
           queryParameters: query_params,
         ),
         headers: _makeHeaders(token),
@@ -232,9 +240,13 @@ class WseApiCall {
         String? token,
       }
   ) async {
+    final uri = Uri.parse(path);
     final res = await http.post(
         Uri(
-          path: path,
+          scheme: uri.scheme,
+          host: uri.host,
+          port: uri.port,
+          path: uri.path,
         ),
         headers: _makeHeaders(token),
         body: body,
@@ -252,9 +264,13 @@ class WseApiCall {
         String? token,
       }
   ) async {
+    final uri = Uri.parse(path);
     final res = await http.put(
         Uri(
-          path: path,
+          scheme: uri.scheme,
+          host: uri.host,
+          port: uri.port,
+          path: uri.path,
         ),
         headers: _makeHeaders(token),
         body: body,
