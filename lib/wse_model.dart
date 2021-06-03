@@ -300,10 +300,14 @@ class WseApiCallExeption implements Exception {
   String _message    = '';
 
   WseApiCallExeption (this._response) {
-    final body = jsonDecode(_response.body);
     _status     = _response.statusCode;
-    _error_code = body.error_code;
-    _message    = body.message;
+    try {
+      final body = jsonDecode(_response.body);
+      _error_code = body.error_code;
+      _message    = body.message;
+    // ignore: empty_catches
+    }catch (e) {
+    }
   }
 
   @override
