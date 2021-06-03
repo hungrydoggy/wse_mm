@@ -1,4 +1,4 @@
-## 0.0.10
+## 0.0.11
 - fix bugs of WseApiCall
 
 ## 0.0.8

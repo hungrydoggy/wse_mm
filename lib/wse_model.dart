@@ -303,8 +303,11 @@ class WseApiCallExeption implements Exception {
     _status     = _response.statusCode;
     try {
       final body = jsonDecode(_response.body);
-      _error_code = body.error_code;
-      _message    = body.message;
+      if (body['error_code'] != null)
+        _error_code = body['error_code'];
+      if (body['message'] != null)
+        _message = body['message'];
+      
     // ignore: empty_catches
     }catch (e) {
     }
