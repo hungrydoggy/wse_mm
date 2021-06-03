@@ -1,6 +1,6 @@
 name: wse_mm
 description: Model Manager for wse
-version: 0.0.11
+version: 0.0.12
 homepage: https://github.com/hungrydoggy/wse_mm
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   
-  mm: ^0.0.12
+  mm: ^0.0.14
   http: ^0.13.2
 
 

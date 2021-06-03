@@ -1,3 +1,6 @@
+## 0.0.12
+- fix a bug of onFetch
+
 ## 0.0.11
 - fix bugs of WseApiCall
 

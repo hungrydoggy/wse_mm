@@ -112,6 +112,9 @@ abstract class WseModel extends Model {
 
   @override
   Future<void> onFetch (List<Property> properties) async {
+    if (properties.isEmpty)
+      return;
+
     final options = '{"attributes":[${properties.map<String>((e)=>'"'+e.name+'"').join(',')}]}';
 
     // call api: get by id
