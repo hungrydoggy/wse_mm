@@ -187,7 +187,7 @@ abstract class WseModelHandler extends ModelHandler {
   Future<void> onDelete(id) async {
     // call api: delete
     final res = await WseApiCall.delete(
-      '$WseModel.api_server_address/$path/$id',
+      '${WseModel.api_server_address}/$path/$id',
       token: WseModel.token,
     );
   }

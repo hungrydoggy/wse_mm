@@ -1,3 +1,6 @@
+## 0.0.17
+- fix a bug of onDelete(id)
+
 ## 0.0.16
 - fix bugs of post & put
 
