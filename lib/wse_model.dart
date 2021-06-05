@@ -146,7 +146,7 @@ abstract class WseModel extends Model {
     final res = await WseApiCall.put(
       '$api_server_address/${wse_sel.path}/$id',
       body: jsonEncode({
-        params: params,
+        'params': params,
       }),
       token: token,
     );
@@ -171,7 +171,7 @@ abstract class WseModelHandler extends ModelHandler {
     final res = await WseApiCall.post(
       '${WseModel.api_server_address}/$path',
       body: jsonEncode({
-        params: params,
+        'params': params,
       }),
       token: WseModel.token,
     );
