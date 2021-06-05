@@ -177,7 +177,7 @@ abstract class WseModelHandler extends ModelHandler {
     );
 
     final res_json = (json.decode(res.body)['items'] as List<dynamic>)[0];
-    final m = newInstance(res_json.id);
+    final m = newInstance(res_json['id']);
     m.setByJson(res_json);
 
     return m as T;
