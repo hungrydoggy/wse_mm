@@ -135,7 +135,7 @@ abstract class WseModel extends Model {
 
   @override
   Future<void> onUpdate (Map<Property, dynamic> property_value_map) async {
-    final params = {};
+    final params = <String, dynamic>{};
     for (final property in property_value_map.keys) {
       final value = property_value_map[property];
       params[property.name] = value;
@@ -161,7 +161,7 @@ abstract class WseModelHandler extends ModelHandler {
 
   @override
   Future<T?> onCreate<T extends Model>(Map<Property, dynamic> property_value_map) async {
-    final params = {};
+    final params = <String, dynamic>{};
     for (final property in property_value_map.keys) {
       final value = property_value_map[property];
       params[property.name] = value;
