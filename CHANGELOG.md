@@ -1,3 +1,6 @@
+## 0.0.13
+- fix bugs of post & put
+
 ## 0.0.12
 - fix a bug of onFetch
 

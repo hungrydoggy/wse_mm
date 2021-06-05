@@ -135,15 +135,19 @@ abstract class WseModel extends Model {
 
   @override
   Future<void> onUpdate (Map<Property, dynamic> property_value_map) async {
-    final params = '{${property_value_map.keys.map<String>((e)=>'"${e.name}":${(property_value_map[e] is String)? ('"'+property_value_map[e]+'"'): property_value_map[e]}').join(',')}}';
+    final params = {};
+    for (final property in property_value_map.keys) {
+      final value = property_value_map[property];
+      params[property.name] = value;
+    }
 
     // call api: put
     final wse_sel = handler as WseModelHandler;
     final res = await WseApiCall.put(
       '$api_server_address/${wse_sel.path}/$id',
-      body: {
+      body: jsonEncode({
         params: params,
-      },
+      }),
       token: token,
     );
   }
@@ -157,14 +161,18 @@ abstract class WseModelHandler extends ModelHandler {
 
   @override
   Future<T?> onCreate<T extends Model>(Map<Property, dynamic> property_value_map) async {
-    final params = '{${property_value_map.keys.map<String>((e)=>'"${e.name}": ${(property_value_map[e] is String)? '"${property_value_map[e]}"': property_value_map[e]}').join(',')}}';
+    final params = {};
+    for (final property in property_value_map.keys) {
+      final value = property_value_map[property];
+      params[property.name] = value;
+    }
 
     // call api: post
     final res = await WseApiCall.post(
       '${WseModel.api_server_address}/$path',
-      body: {
+      body: jsonEncode({
         params: params,
-      },
+      }),
       token: WseModel.token,
     );
 
