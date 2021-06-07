@@ -145,9 +145,9 @@ abstract class WseModel extends Model {
     final wse_sel = handler as WseModelHandler;
     final res = await WseApiCall.put(
       '$api_server_address/${wse_sel.path}/$id',
-      body: jsonEncode({
+      body: {
         'params': params,
-      }),
+      },
       token: token,
     );
   }
@@ -170,9 +170,9 @@ abstract class WseModelHandler extends ModelHandler {
     // call api: post
     final res = await WseApiCall.post(
       '${WseModel.api_server_address}/$path',
-      body: jsonEncode({
+      body: {
         'params': params,
-      }),
+      },
       token: WseModel.token,
     );
 
@@ -260,7 +260,7 @@ class WseApiCall {
           path: uri.path,
         ),
         headers: _makeHeaders(token),
-        body: body,
+        body: jsonEncode(body),
     );
     if (res.statusCode ~/ 100 != 2)
       throw WseApiCallExeption(res);
@@ -284,7 +284,7 @@ class WseApiCall {
           path: uri.path,
         ),
         headers: _makeHeaders(token),
-        body: body,
+        body: jsonEncode(body),
     );
     if (res.statusCode ~/ 100 != 2)
       throw WseApiCallExeption(res);

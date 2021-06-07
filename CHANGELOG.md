@@ -1,3 +1,6 @@
+## 0.0.18
+- fix a bug of json stringify of body
+
 ## 0.0.17
 - fix a bug of onDelete(id)
 
