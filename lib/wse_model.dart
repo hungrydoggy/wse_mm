@@ -94,14 +94,23 @@ abstract class WseModel extends Model {
       }
 
       final nested_mh = wse_mh.key_nestedhandler[key]!;
-      final obj = json[key] as Map<String, dynamic>;
-      if (obj.containsKey(nested_mh.id_key) == false) {
-        print('no ${nested_mh.model_name}.id of nested key "$key" in $model_name');
-        continue;
+      final __setObjByJson = (Map<String, dynamic> obj) {
+        if (obj.containsKey(nested_mh.id_key) == false) {
+          print('no ${nested_mh.model_name}.id of nested key "$key" in $model_name');
+          return;
+        }
+        
+        final m = Model.getOrNewModel(nested_mh, obj[nested_mh.id_key]!);
+        m.setByJson(obj);
+      };
+
+      if (json[key] is List<dynamic>) {
+        for (final o in json[key] as List<dynamic>) {
+          __setObjByJson(o as Map<String, dynamic>);
+        }
+      }else {
+        __setObjByJson(json[key] as Map<String, dynamic>);
       }
-      
-      final m = Model.getOrNewModel(nested_mh, obj[nested_mh.id_key]!);
-      m.setByJson(obj);
 
       json.remove(key);
     }

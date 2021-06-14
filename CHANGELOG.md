@@ -1,3 +1,6 @@
+## 0.0.19
+- Update setByJson to cover list cases
+
 ## 0.0.18
 - fix a bug of json stringify of body
 
