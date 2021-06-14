@@ -84,6 +84,7 @@ abstract class WseModel extends Model {
   void setByJson (dynamic json) {
     // process for results by include
     final wse_mh = handler as WseModelHandler;
+    final del_keys = <String>[];
     for (final key in json.keys) {
       if (key[0] != '*')
         continue;
@@ -112,8 +113,12 @@ abstract class WseModel extends Model {
         __setObjByJson(json[key] as Map<String, dynamic>);
       }
 
-      json.remove(key);
+      del_keys.add(key);
     }
+
+    // delete keys
+    for (final k in del_keys)
+      json.remove(k);
 
     // set self
     super.setByJson(json);
