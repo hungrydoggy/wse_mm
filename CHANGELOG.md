@@ -1,4 +1,4 @@
-## 0.0.20
+## 0.0.21
 - Update setByJson to cover list cases
 
 ## 0.0.18
