@@ -10,26 +10,52 @@ import 'package:mm/view_model.dart';
 abstract class WseModel extends Model {
   static String api_server_address = 'http://localhost:3001/api';
   static String? token;
+  static var _name_token_map = <String, String>{};
+
+  static String? getNamedToken (String name) {
+    if (_name_token_map.containsKey(name) == false)
+      return null;
+    return _name_token_map[name];
+  }
+
+  static void setNamedToken (String name, String token) {
+    _name_token_map[name] = token;
+  }
+
+  static void removeNamedToken (String name) {
+    _name_token_map.remove(name);
+  }
 
   static Future<List<dynamic>> find (
       WseModelHandler handler,
       dynamic options,
-      { dynamic? order_query }
+      {
+        String? token_name,
+        dynamic? order_query,
+      }
   ) async {
     // call api: get
     final query_params = <String, dynamic>{ 'options': jsonEncode(options) };
     if (order_query != null)
       query_params['order_query'] = jsonEncode(order_query);
     
+    var token = WseModel.token;
+    if (token_name != null)
+      token = getNamedToken(token_name);
+
     final res = await WseApiCall.get(
       '$api_server_address/${handler.path}',
       query_params: query_params,
       token: token,
     );
+
+    final user_data = <String, dynamic>{};
+    if (token_name != null)
+      user_data['token_name'] = token_name;
     
     final res_jsons = (json.decode(res.body)['items'] as List<dynamic>);
     for (final rj in res_jsons) {
-      registerByJson(handler, rj);
+      registerByJson(handler, rj, user_data: user_data);
     }
 
     return res_jsons;
@@ -39,8 +65,9 @@ abstract class WseModel extends Model {
       WseModelHandler handler,
       dynamic id,
       {
-        dynamic? options,
-        bool?    need_count,
+        String? token_name,
+        dynamic options,
+        bool?   need_count,
       }
   ) async {
     // call api: get
@@ -49,22 +76,36 @@ abstract class WseModel extends Model {
       query_params['options'] = jsonEncode(options);
     if (need_count != null)
       query_params['need_count'] = jsonEncode(need_count);
+
+    var token = WseModel.token;
+    if (token_name != null)
+      token = getNamedToken(token_name);
     
     final res = await WseApiCall.get(
       '$api_server_address/${handler.path}/$id',
       query_params: query_params,
       token: token,
     );
+
+    final user_data = <String, dynamic>{};
+    if (token_name != null)
+      user_data['token_name'] = token_name;
     
     final res_jsons = (json.decode(res.body)['items'] as List<dynamic>);
     for (final rj in res_jsons) {
-      registerByJson(handler, rj);
+      registerByJson(handler, rj, user_data: user_data);
     }
 
     return res_jsons;
   }
 
-  static Model registerByJson (WseModelHandler handler, dynamic json) {
+  static Model registerByJson (
+      WseModelHandler handler,
+      dynamic json,
+      {
+        Map<String, dynamic>? user_data
+      }
+  ) {
     if (json.containsKey(handler.id_key) == false)
       throw 'no id key for ${handler.model_name}';
     
@@ -74,14 +115,25 @@ abstract class WseModel extends Model {
       m = handler.newInstance(id);
       Model.putModel(handler, m);
     }
-    m.setByJson(json);
+    m.setByJson(json, user_data: user_data);
 
     return m;
   }
   
 
+  String? token_name;
+
+
   @override
-  void setByJson (dynamic json) {
+  void setByJson (
+      dynamic json,
+      {
+        Map<String, dynamic>? user_data,
+      }
+  ) {
+    if (user_data != null && user_data.containsKey('token_name'))
+      token_name = user_data['token_name'];
+
     // process for results by include
     final wse_mh = handler as WseModelHandler;
     for (final key in json.keys) {
@@ -101,7 +153,7 @@ abstract class WseModel extends Model {
         }
         
         final m = Model.getOrNewModel(nested_mh, obj[nested_mh.id_key]!);
-        m.setByJson(obj);
+        m.setByJson(obj, user_data: user_data);
       };
 
       if (json[key] is List<dynamic>) {
@@ -114,17 +166,28 @@ abstract class WseModel extends Model {
     }
 
     // set self
-    super.setByJson(json);
+    super.setByJson(json, user_data: user_data);
   }
 
   @override
-  Future<void> onFetch (List<Property> properties) async {
+  Future<void> onFetch (
+      List<Property> properties,
+      Map<String, dynamic>? user_data,
+  ) async {
     if (properties.isEmpty)
       return;
+    
+    user_data ??= {};
+    if (user_data.containsKey('token_name'))
+      token_name = user_data['token_name'];
+    user_data['token_name'] = token_name;
 
-    final options = '{"attributes":[${properties.map<String>((e)=>'"'+e.name+'"').join(',')}]}';
+    var token = WseModel.token;
+    if (token_name != null)
+      token = getNamedToken(token_name!);
 
     // call api: get by id
+    final options = '{"attributes":[${properties.map<String>((e)=>'"'+e.name+'"').join(',')}]}';
     final wse_sel = handler as WseModelHandler;
     final res = await WseApiCall.get(
       '$api_server_address/${wse_sel.path}/$id',
@@ -135,18 +198,28 @@ abstract class WseModel extends Model {
     );
     
     final res_json = (json.decode(res.body)['items'] as List<dynamic>)[0];
-    setByJson(res_json);
+    setByJson(res_json, user_data: user_data);
 
     Model.putModel(handler, this);
   }
 
   @override
-  Future<void> onUpdate (Map<Property, dynamic> property_value_map) async {
+  Future<void> onUpdate (
+      Map<Property, dynamic> property_value_map,
+      Map<String, dynamic>? user_data,
+  ) async {
     final params = <String, dynamic>{};
     for (final property in property_value_map.keys) {
       final value = property_value_map[property];
       params[property.name] = value;
     }
+
+    if (user_data != null && user_data.containsKey('token_name'))
+      token_name = user_data['token_name'];
+
+    var token = WseModel.token;
+    if (token_name != null)
+      token = getNamedToken(token_name!);
 
     // call api: put
     final wse_sel = handler as WseModelHandler;
@@ -167,12 +240,25 @@ abstract class WseModelHandler extends ModelHandler {
   Map<String, WseModelHandler> get key_nestedhandler;
 
   @override
-  Future<T?> onCreate<T extends Model>(Map<Property, dynamic> property_value_map) async {
+  Future<T?> onCreate<T extends Model>(
+      Map<Property, dynamic> property_value_map,
+      Map<String, dynamic>? user_data,
+  ) async {
     final params = <String, dynamic>{};
     for (final property in property_value_map.keys) {
       final value = property_value_map[property];
       params[property.name] = value;
     }
+
+    String? token_name;
+    user_data ??= {};
+    if (user_data.containsKey('token_name'))
+      token_name = user_data['token_name'];
+    user_data['token_name'] = token_name;
+
+    var token = WseModel.token;
+    if (token_name != null)
+      token = WseModel.getNamedToken(token_name);
 
     // call api: post
     final res = await WseApiCall.post(
@@ -180,22 +266,33 @@ abstract class WseModelHandler extends ModelHandler {
       body: {
         'params': params,
       },
-      token: WseModel.token,
+      token: token,
     );
 
     final res_json = (json.decode(res.body)['items'] as List<dynamic>)[0];
     final m = newInstance(res_json['id']);
-    m.setByJson(res_json);
+    m.setByJson(res_json, user_data: user_data);
 
     return m as T;
   }
 
   @override
-  Future<void> onDelete(id) async {
+  Future<void> onDelete(
+      id,
+      Map<String, dynamic>? user_data,
+  ) async {
+    String? token_name;
+    if (user_data != null && user_data.containsKey('token_name'))
+      token_name = user_data['token_name'];
+
+    var token = WseModel.token;
+    if (token_name != null)
+      token = WseModel.getNamedToken(token_name);
+    
     // call api: delete
     final res = await WseApiCall.delete(
       '${WseModel.api_server_address}/$path/$id',
-      token: WseModel.token,
+      token: token,
     );
   }
 }

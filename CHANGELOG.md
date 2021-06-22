@@ -1,3 +1,6 @@
+## 0.0.22
+- Add named-token
+
 ## 0.0.21
 - Update setByJson to cover list cases
 
