@@ -187,7 +187,7 @@ abstract class WseModel extends Model {
       token = getNamedToken(token_name!);
 
     // call api: get by id
-    final options = '{"attributes":[${properties.map<String>((e)=>'"'+e.name+'"').join(',')}]}';
+    final options = '{"attributes":[${properties.map<String>((e)=>'"'+e.name+'"').join(',')},"id"]}';
     final wse_sel = handler as WseModelHandler;
     final res = await WseApiCall.get(
       '$api_server_address/${wse_sel.path}/$id',
