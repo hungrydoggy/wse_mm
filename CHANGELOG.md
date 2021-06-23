@@ -1,4 +1,4 @@
-## 0.0.26
+## 0.0.27
 - Add id_key to attributes of options
 
 ## 0.0.24
