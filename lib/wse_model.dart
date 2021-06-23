@@ -241,6 +241,10 @@ abstract class WseModel extends Model {
     setByJson(res_json, user_data: user_data);
 
     Model.putModel(handler, this);
+
+    if (user_data.containsKey('postOnFetch')) {
+      user_data['postOnFetch'](res_json);
+    }
   }
 
   @override
@@ -254,7 +258,8 @@ abstract class WseModel extends Model {
       params[property.name] = value;
     }
 
-    if (user_data != null && user_data.containsKey('token_name'))
+    user_data ??= {};
+    if (user_data.containsKey('token_name'))
       token_name = user_data['token_name'];
 
     var token = WseModel.token;
@@ -270,6 +275,10 @@ abstract class WseModel extends Model {
       },
       token: token,
     );
+
+    if (user_data.containsKey('postOnFetch')) {
+      user_data['postOnFetch'](id);
+    }
   }
 }
 
@@ -313,6 +322,10 @@ abstract class WseModelHandler extends ModelHandler {
     final m = newInstance(res_json['id']);
     m.setByJson(res_json, user_data: user_data);
 
+    if (user_data.containsKey('postOnCreate')) {
+      user_data['postOnCreate'](m, res_json);
+    }
+
     return m as T;
   }
 
@@ -322,7 +335,8 @@ abstract class WseModelHandler extends ModelHandler {
       Map<String, dynamic>? user_data,
   ) async {
     String? token_name;
-    if (user_data != null && user_data.containsKey('token_name'))
+    user_data ??= {};
+    if (user_data.containsKey('token_name'))
       token_name = user_data['token_name'];
 
     var token = WseModel.token;
@@ -334,6 +348,10 @@ abstract class WseModelHandler extends ModelHandler {
       '${WseModel.api_server_address}/$path/$id',
       token: token,
     );
+
+    if (user_data.containsKey('postOnDelete')) {
+      user_data['postOnDelete'](id);
+    }
   }
 }
 
