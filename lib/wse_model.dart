@@ -153,7 +153,7 @@ abstract class WseModel extends Model {
 
     attributes.firstWhere(
         (e) => e==mh.id_key,
-        orElse: () { attributes.add(mh.id_key); },
+        orElse: () { attributes.add(mh.id_key); return ''; },
     );
   }
   
