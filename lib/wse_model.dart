@@ -126,7 +126,7 @@ abstract class WseModel extends Model {
     // handle include
     if (options.containsKey('include')) {
       final includes = options['include'];
-      if (includes is Array == true) {
+      if (includes is List == true) {
         for (final inc in includes) {
           if (inc is String)
             continue;
@@ -141,7 +141,7 @@ abstract class WseModel extends Model {
       return;
 
     var attributes = options['attributes'];
-    if (attributes is Array == false) {
+    if (attributes is List == false) {
       if (attributes.containsKey('include'))
         attributes = attributes['include'] as List<dynamic>;
       
