@@ -1,3 +1,6 @@
+## 0.0.30
+- Add WseModel.removeAllNamedTokens()
+
 ## 0.0.29
 - Add id_key to attributes of options
 

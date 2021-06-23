@@ -26,6 +26,10 @@ abstract class WseModel extends Model {
     _name_token_map.remove(name);
   }
 
+  static void removeAllNamedTokens () {
+    _name_token_map.clear();
+  }
+
   static Future<List<dynamic>> find (
       WseModelHandler handler,
       dynamic options,
