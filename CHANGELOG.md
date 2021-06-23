@@ -1,4 +1,7 @@
-## 0.0.23
+## 0.0.25
+- Add id_key to attributes of options
+
+## 0.0.24
 - Add named-token
 
 ## 0.0.21

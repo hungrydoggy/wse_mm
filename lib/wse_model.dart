@@ -1,6 +1,7 @@
 library wse_mm;
 
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:http/http.dart' as http;
 import 'package:mm/model.dart';
@@ -34,7 +35,8 @@ abstract class WseModel extends Model {
         dynamic? order_query,
       }
   ) async {
-    // call api: get
+    _addIdToAttributes(handler, options);
+
     final query_params = <String, dynamic>{ 'options': jsonEncode(options) };
     if (order_query != null)
       query_params['order_query'] = jsonEncode(order_query);
@@ -118,6 +120,41 @@ abstract class WseModel extends Model {
     m.setByJson(json, user_data: user_data);
 
     return m;
+  }
+
+  static void _addIdToAttributes(WseModelHandler mh, dynamic options) {
+    // handle include
+    if (options.containsKey('include')) {
+      final includes = options['include'];
+      if (includes is Array == true) {
+        for (final inc in includes) {
+          if (inc is String)
+            continue;
+          _addIdToAttributes(mh, inc);
+        }
+      }
+    }
+
+
+    // handle attributes
+    if (options.containsKey('attributes') == false)
+      return;
+
+    var attributes = options['attributes'];
+    if (attributes is Array == false) {
+      if (attributes.containsKey('include'))
+        attributes = attributes['include'] as List<dynamic>;
+      
+      if (attributes.containsKey('exclude')) {
+        final exc = attributes['exclude'] as List<dynamic>;
+        exc.remove(mh.id_key);
+      }
+    }
+
+    attributes.firstWhere(
+        (e) => e==mh.id_key,
+        orElse: () => attributes.add(mh.id_key),
+    );
   }
   
 
