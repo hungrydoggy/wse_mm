@@ -1,3 +1,6 @@
+## 0.0.32
+- Add converter from DateTime to json
+
 ## 0.0.31
 - Add user_data.postOn~ func
 

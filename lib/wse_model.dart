@@ -40,9 +40,9 @@ abstract class WseModel extends Model {
   ) async {
     _addIdToAttributes(handler, options);
 
-    final query_params = <String, dynamic>{ 'options': jsonEncode(options) };
+    final query_params = <String, dynamic>{ 'options': jsonEncode(options, toEncodable: _toJsonEncodable) };
     if (order_query != null)
-      query_params['order_query'] = jsonEncode(order_query);
+      query_params['order_query'] = jsonEncode(order_query, toEncodable: _toJsonEncodable);
     
     var token = WseModel.token;
     if (token_name != null)
@@ -78,9 +78,9 @@ abstract class WseModel extends Model {
     // call api: get
     final query_params = <String, dynamic>{};
     if (options != null)
-      query_params['options'] = jsonEncode(options);
+      query_params['options'] = jsonEncode(options, toEncodable: _toJsonEncodable);
     if (need_count != null)
-      query_params['need_count'] = jsonEncode(need_count);
+      query_params['need_count'] = jsonEncode(need_count, toEncodable: _toJsonEncodable);
 
     var token = WseModel.token;
     if (token_name != null)
@@ -422,7 +422,7 @@ class WseApiCall {
           path: uri.path,
         ),
         headers: _makeHeaders(token),
-        body: jsonEncode(body),
+        body: jsonEncode(body, toEncodable: _toJsonEncodable),
     );
     if (res.statusCode ~/ 100 != 2)
       throw WseApiCallExeption(res);
@@ -446,7 +446,7 @@ class WseApiCall {
           path: uri.path,
         ),
         headers: _makeHeaders(token),
-        body: jsonEncode(body),
+        body: jsonEncode(body, toEncodable: _toJsonEncodable),
     );
     if (res.statusCode ~/ 100 != 2)
       throw WseApiCallExeption(res);
@@ -492,3 +492,9 @@ class WseApiCallExeption implements Exception {
   }
 }
 
+
+Object? _toJsonEncodable (Object? obj) {
+  if (obj is DateTime)
+    return obj.toIso8601String();
+  return obj;
+}
