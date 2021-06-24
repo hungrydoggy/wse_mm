@@ -1,3 +1,6 @@
+## 0.0.33
+- Fix a bug of null-valued-association
+
 ## 0.0.32
 - Add converter from DateTime to json
 

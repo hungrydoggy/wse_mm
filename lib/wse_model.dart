@@ -185,6 +185,9 @@ abstract class WseModel extends Model {
         continue;
       }
 
+      if (json[key] == null)
+        continue;
+
       final nested_mh = wse_mh.key_nestedhandler[key]!;
       final __setObjByJson = (Map<String, dynamic> obj) {
         if (obj.containsKey(nested_mh.id_key) == false) {
