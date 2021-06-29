@@ -474,6 +474,12 @@ class WseApiCallExeption implements Exception {
   int    _status     = 0;
   String _error_code = '';
   String _message    = '';
+  dynamic _body;
+
+  int     get status     => _status;
+  String  get error_code => _error_code;
+  String  get message    => _message;
+  dynamic get body       => _body;
 
   WseApiCallExeption (this._response) {
     _status     = _response.statusCode;
@@ -483,6 +489,8 @@ class WseApiCallExeption implements Exception {
         _error_code = body['error_code'];
       if (body['message'] != null)
         _message = body['message'];
+      
+      _body = body;
       
     // ignore: empty_catches
     }catch (e) {
