@@ -292,6 +292,11 @@ abstract class WseModelHandler extends ModelHandler {
   Map<String, WseModelHandler> get key_nestedhandler;
 
   @override
+  bool isValidKey (String key) {
+    return key_nestedhandler.containsKey(key) || super.isValidKey(key);
+  }
+
+  @override
   Future<T?> onCreate<T extends Model>(
       Map<Property, dynamic> property_value_map,
       Map<String, dynamic>? user_data,

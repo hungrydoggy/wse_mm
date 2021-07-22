@@ -1,3 +1,6 @@
+## 0.0.35
+- Add WseModelHandler.isValidKey()
+
 ## 0.0.33
 - Fix a bug of null-valued-association
 
