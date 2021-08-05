@@ -1,3 +1,6 @@
+## 0.0.36
+- Update WseApiCall.get/delete
+
 ## 0.0.35
 - Add WseModelHandler.isValidKey()
 

@@ -373,6 +373,12 @@ class WseApiCall {
         String? token,
       }
   ) async {
+    for (final k in query_params) {
+      final v = query_params[k];
+      if (v is int || v is double)
+        query_params[k] = v.toString();
+    }
+
     final uri = Uri.parse(path);
     final res = await http.get(
         Uri(
@@ -397,6 +403,12 @@ class WseApiCall {
         String? token,
       }
   ) async {
+    for (final k in query_params) {
+      final v = query_params[k];
+      if (v is int || v is double)
+        query_params[k] = v.toString();
+    }
+    
     final uri = Uri.parse(path);
     final res = await http.delete(
         Uri(
