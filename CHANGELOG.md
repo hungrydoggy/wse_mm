@@ -1,4 +1,4 @@
-## 0.0.36
+## 0.0.37
 - Update WseApiCall.get/delete
 
 ## 0.0.35
