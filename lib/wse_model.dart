@@ -375,7 +375,7 @@ class WseApiCall {
   ) async {
     for (final k in query_params.keys) {
       final v = query_params[k];
-      if (v is int || v is double)
+      if (v is int || v is double || v is bool)
         query_params[k] = v.toString();
     }
 
@@ -405,7 +405,7 @@ class WseApiCall {
   ) async {
     for (final k in query_params.keys) {
       final v = query_params[k];
-      if (v is int || v is double)
+      if (v is int || v is double || v is bool)
         query_params[k] = v.toString();
     }
 
