@@ -377,6 +377,8 @@ class WseApiCall {
       final v = query_params[k];
       if (v is int || v is double || v is bool)
         query_params[k] = v.toString();
+      else if (v is List || v is Map)
+        query_params[k] = jsonEncode(v, toEncodable: _toJsonEncodable);
     }
 
     final uri = Uri.parse(path);
