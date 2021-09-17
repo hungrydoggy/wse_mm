@@ -1,3 +1,6 @@
+## 0.0.39
+- Fix a bug of encoding arr/obj param of get-method
+
 ## 0.0.38
 - Update WseApiCall.get/delete
 
