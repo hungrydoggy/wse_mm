@@ -1,3 +1,6 @@
+## 0.0.41
+- Handle Point<num> on encoding json
+
 ## 0.0.40
 - Fix a bug of encoding arr/obj param of get-method
 

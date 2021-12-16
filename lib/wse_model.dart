@@ -1,6 +1,7 @@
 library wse_mm;
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:mm/model.dart';
@@ -526,7 +527,13 @@ class WseApiCallExeption implements Exception {
 
 
 Object? _toJsonEncodable (Object? obj) {
-  if (obj is DateTime)
+  if (obj is DateTime) {
     return obj.toIso8601String();
+  }else if (obj is Point<num>) {
+    return {
+      'type': 'Point',
+      'coordinates': [obj.x, obj.y],
+    };
+  }
   return obj;
 }
