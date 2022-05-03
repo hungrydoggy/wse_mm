@@ -380,6 +380,8 @@ class WseApiCall {
         query_params[k] = v.toString();
       else if (v is List || v is Map)
         query_params[k] = jsonEncode(v, toEncodable: _toJsonEncodable);
+      
+      query_params[k] = query_params[k].replaceAll(RegExp(r'%'), '%25');
     }
 
     final uri = Uri.parse(path);
@@ -412,6 +414,8 @@ class WseApiCall {
         query_params[k] = v.toString();
       else if (v is List || v is Map)
         query_params[k] = jsonEncode(v, toEncodable: _toJsonEncodable);
+
+      query_params[k] = query_params[k].replaceAll(RegExp(r'%'), '%25');
     }
 
     final uri = Uri.parse(path);
