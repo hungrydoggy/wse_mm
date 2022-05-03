@@ -1,6 +1,6 @@
 name: wse_mm
 description: Model Manager for wse
-version: 0.0.41
+version: 0.0.42
 homepage: https://github.com/hungrydoggy/wse_mm
 
 environment:
