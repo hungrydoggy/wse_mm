@@ -1,3 +1,6 @@
+## 0.0.43
+- Revert 0.0.42
+
 ## 0.0.41
 - Handle Point<num> on encoding json
 
