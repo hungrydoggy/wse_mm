@@ -1,6 +1,3 @@
-## 0.0.42
-- Update WseApiCall.get/delete to replace '%' to '%25' of queries
-
 ## 0.0.41
 - Handle Point<num> on encoding json
 
