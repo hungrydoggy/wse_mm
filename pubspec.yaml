@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   
-  mm: ^0.0.31
+  mm: ^0.0.34
   http: ^0.13.2
 
 
