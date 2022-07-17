@@ -178,11 +178,9 @@ abstract class WseModel extends Model {
     // process for results by include
     final wse_mh = handler as WseModelHandler;
     for (final key in json.keys) {
-      if (key[0] != '*')
-        continue;
-      
       if (wse_mh.key_nestedhandler.containsKey(key) == false) {
-        print('no nested key "$key" in $model_name');
+        if (key[0] == '*')
+          print('no nested key "$key" in $model_name');
         continue;
       }
 

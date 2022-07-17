@@ -1,3 +1,6 @@
+## 0.0.44
+- Fix a bug about setting associated-property on setByJson
+
 ## 0.0.43
 - Revert 0.0.42
 
